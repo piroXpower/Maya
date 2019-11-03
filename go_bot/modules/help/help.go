@@ -24,7 +24,7 @@ package help
 
 import (
 	"fmt"
-	"github.com/ATechnoHazard/ginko/go_bot/modules/utils/error_handling"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 	"github.com/PaulSonOfLars/gotgbot/handlers"

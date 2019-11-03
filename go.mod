@@ -1,4 +1,4 @@
-module github.com/ATechnoHazard/ginko
+module github.com/ZerNico/Maya
 
 go 1.12
 

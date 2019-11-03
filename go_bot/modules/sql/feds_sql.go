@@ -23,7 +23,7 @@
 package sql
 
 import (
-	"github.com/ATechnoHazard/ginko/go_bot/modules/utils/error_handling"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 )
 
 type Federation struct {

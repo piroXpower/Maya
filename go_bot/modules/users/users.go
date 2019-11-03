@@ -23,7 +23,7 @@
 package users
 
 import (
-	"github.com/ATechnoHazard/ginko/go_bot/modules/sql"
+	"github.com/ZerNico/Maya/go_bot/modules/sql"
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 	"github.com/PaulSonOfLars/gotgbot/handlers"

@@ -23,8 +23,8 @@
 package sql
 
 import (
-	"github.com/ATechnoHazard/ginko/go_bot"
-	"github.com/ATechnoHazard/ginko/go_bot/modules/utils/error_handling"
+	"github.com/ZerNico/Maya/go_bot"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/lib/pq"
