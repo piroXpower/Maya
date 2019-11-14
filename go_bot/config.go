@@ -46,8 +46,11 @@ var BotConfig Config
 
 // Returns a config object generated from the dotenv file
 func init() {
-	err := godotenv.Load()
-	error_handling.FatalError(err)
+
+	if _, ok := os.LookupEnv("ENV"); !ok {
+		err := godotenv.Load() //Load .env file
+		error_handling.FatalError(err)
+	}
 	returnConfig := Config{}
 
 	// Assign config struct values by loading them from the env
@@ -69,8 +72,7 @@ func init() {
 		log.Fatal("Missing owner username")
 	}
 
-	returnConfig.OwnerId, err = strconv.Atoi(os.Getenv("OWNER_ID"))
-	error_handling.FatalError(err)
+	returnConfig.OwnerId, _ = strconv.Atoi(os.Getenv("OWNER_ID"))
 
 	returnConfig.SudoUsers = strings.Split(os.Getenv("SUDO_USERS"), " ")
 
