@@ -29,6 +29,7 @@ import (
 	"github.com/ZerNico/Maya/go_bot/modules/blacklist"
 	"github.com/ZerNico/Maya/go_bot/modules/deleting"
 	"github.com/ZerNico/Maya/go_bot/modules/feds"
+	"github.com/ZerNico/Maya/go_bot/modules/globalBans"
 	"github.com/ZerNico/Maya/go_bot/modules/help"
 	"github.com/ZerNico/Maya/go_bot/modules/misc"
 	"github.com/ZerNico/Maya/go_bot/modules/muting"
@@ -66,6 +67,7 @@ func main() {
 	feds.LoadFeds(u)
 	notes.LoadNotes(u)
 	help.LoadHelp(u)
+	globalBans.LoadGlobalBans(u)
 
 	log.Println("Starting long polling")
 	err = u.StartPolling()

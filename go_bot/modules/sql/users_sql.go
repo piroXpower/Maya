@@ -76,3 +76,14 @@ func GetUserIdByName(username string) *User {
 	SESSION.Where("user_name = ?", username).First(user)
 	return user
 }
+
+func AllChats() []string{
+	var chats []Chat
+
+	SESSION.Find(&chats)
+	tmp := make([]string, 0)
+	for _, chat := range chats {
+		tmp = append(tmp, chat.ChatId)
+	}
+	return tmp
+}
