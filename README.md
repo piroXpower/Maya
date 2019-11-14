@@ -1,11 +1,11 @@
-# Ginko
-[![Actions Status](https://github.com/ATechnoHazard/ginko/workflows/CI/badge.svg)](https://github.com/ATechnoHazard/ginko/actions)
+# Maya
+[![Dockerhub Status](https://img.shields.io/docker/cloud/build/zernico/maya)](https://hub.docker.com/r/zernico/maya)
 
 Telegram bot written in Go. Currently in alpha. Contributions are welcome.
 
 A modular group management bot, written with the purpose of being highly concurrent.
 
-You can [find us on telegram](https://t.me/gobotsupport)! I'm usually online, so I can hopefully answer any questions you may have.
+You can [find me on telegram](https://t.me/NicoFranke)! I'm usually online, so I can hopefully answer any questions you may have.
 
 
 
@@ -29,7 +29,11 @@ Download the latest binary for your machine's OS and architecture from the relea
 
 It's that simple.
 
+## Credits
+Thanks to [ATechnoHazard](https://github.com/ATechnoHazard) the original creator of [ginko](https://github.com/ATechnoHazard/ginko).  
+Thanks to [PaulSonOfLars](https://github.com/PaulSonOfLars) for his [telegram go library](https://github.com/PaulSonOfLars/gotgbot).
+
 ## Download source
 Contributions to this project are welcome.
 To download the source, get it like any other Go project:
- `go get -u github.com/ATechnoHazard/ginko`.
+ `go get -u github.com/ZerNico/Maya`.

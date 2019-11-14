@@ -108,14 +108,14 @@ func initHelpButtons() {
 }
 
 func help(b ext.Bot, u *gotgbot.Update) error {
-	msg := b.NewSendableMessage(u.EffectiveChat.Id, "Hey there! I'm Ginko, a group management bot written in Go."+
+	msg := b.NewSendableMessage(u.EffectiveChat.Id, "Hey there! I'm Maya, a group management bot written in Go."+
 		"I have a ton of useful features like notes, filters and even a warn system.\n\n"+
 		"Commands are preceded with a slash  (/) or an exclamation mark (!)\n\n"+
 		"Some basic commands:\n\n"+
 		"- /start: duh, you already know what this does\n\n"+
 		"- /help: for info on how to use me\n\n"+
 		"- /donate: info on who made me and how you can support them\n\n\n"+
-		"If you have any bugs reports, questions or suggestions you can head over to @gobotsupport.\n\n"+
+		"If you have any bugs reports, questions or suggestions you can message me @NicoFranke.\n\n"+
 		"Have fun using me!")
 	msg.ParseMode = parsemode.Html
 	msg.ReplyToMessageId = u.EffectiveMessage.MessageId
@@ -244,14 +244,14 @@ func buttonHandler(b ext.Bot, u *gotgbot.Update) error {
 					"Else, will just kick.\n")
 			break
 		case "back":
-			msg.Text = "Hey there! I'm Ginko, a group management bot written in Go." +
+			msg.Text = "Hey there! I'm Maya, a group management bot written in Go." +
 				"I have a ton of useful features like notes, filters and even a warn system.\n\n" +
 				"Commands are preceded with a slash (/) or an exclamation mark (!)\n\n" +
 				"Some basic commands:\n\n" +
 				"- /start: duh, you already know what this does\n\n" +
 				"- /help: for info on how to use me\n\n" +
 				"- /donate: info on who made me and how you can support them\n\n\n" +
-				"If you have any bugs reports, questions or suggestions you can head over to @gobotsupport.\n\n" +
+				"If you have any bugs reports, questions or suggestions you can message me @NicoFranke.\n\n" +
 				"Have fun using me!"
 			msg.ReplyMarkup = &markup
 			break
