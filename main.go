@@ -38,6 +38,7 @@ import (
 	"github.com/ZerNico/Maya/go_bot/modules/users"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/ZerNico/Maya/go_bot/modules/warns"
+	"github.com/ZerNico/Maya/go_bot/modules/welcome"
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 	"github.com/PaulSonOfLars/gotgbot/handlers"
@@ -68,6 +69,7 @@ func main() {
 	notes.LoadNotes(u)
 	help.LoadHelp(u)
 	globalBans.LoadGlobalBans(u)
+	welcome.LoadWelcome(u)
 
 	log.Println("Starting long polling")
 	err = u.StartPolling()
