@@ -96,8 +96,8 @@ func initHelpButtons() {
 		CallbackData: fmt.Sprintf("help(%v)", "notes"),
 	}
 	helpButtons[3][1] = ext.InlineKeyboardButton{
-		Text:         "users",
-		CallbackData: fmt.Sprintf("help(%v)", "users"),
+		Text:         "global bans",
+		CallbackData: fmt.Sprintf("help(%v)", "globalbans"),
 	}
 	helpButtons[4][1] = ext.InlineKeyboardButton{
 		Text:         "warns",
@@ -108,15 +108,15 @@ func initHelpButtons() {
 }
 
 func help(b ext.Bot, u *gotgbot.Update) error {
-	msg := b.NewSendableMessage(u.EffectiveChat.Id, "Hey there! I'm Maya, a group management bot written in Go."+
-		"I have a ton of useful features like notes, filters and even a warn system.\n\n"+
-		"Commands are preceded with a slash  (/) or an exclamation mark (!)\n\n"+
-		"Some basic commands:\n\n"+
-		"- /start: duh, you already know what this does\n\n"+
-		"- /help: for info on how to use me\n\n"+
-		"- /donate: info on who made me and how you can support them\n\n\n"+
-		"If you have any bugs reports, questions or suggestions you can message me @NicoFranke.\n\n"+
-		"Have fun using me!")
+	msg := b.NewSendableMessage(u.EffectiveChat.Id, "Hey there! I'm Maya, a group management bot written in Go,"+
+		"here to help you manage your groups!\n" +
+		"I have a ton of useful features, such as a note keeping system, administration, filters and even a warn system.\n\n"+
+		"Commands are preceded with a slash (/) or an exclamation mark (!)\n\n"+
+		"Some basic commands:\n"+
+		" - /start: duh, you already know what this does\n"+
+		" - /help: for info on how to use me\n"+
+		" - /donate: info on who made me and how you can support them\n\n"+
+		"If you have any bugs reports, questions or suggestions you can message me (@NicoFranke).")
 	msg.ParseMode = parsemode.Html
 	msg.ReplyToMessageId = u.EffectiveMessage.MessageId
 	msg.ReplyMarkup = &markup
@@ -158,23 +158,23 @@ func buttonHandler(b ext.Bot, u *gotgbot.Update) error {
 		switch module {
 		case "admin":
 			msg.Text = "Here is the help for the <b>Admin</b> module:\n\n" +
-				"- /adminlist: list of admins in the chat\n\n" +
+				" - /adminlist: Lists all admins in the chat.\n\n" +
 				"<b>Admin only:</b>" +
-				html.EscapeString("- /pin: silently pins the message replied to - add 'loud' or 'notify' to give notifs to users.\n"+
-					"- /unpin: unpins the currently pinned message\n"+
-					"- /invitelink: gets invitelink\n"+
-					"- /promote: promotes the user replied to\n"+
-					"- /demote: demotes the user replied to\n")
+				html.EscapeString("- /pin: Silently pins the message replied to - add 'loud' or 'notify' to give notifs to users.\n"+
+					" - /unpin: Unpins the currently pinned message.\n"+
+					" - /invitelink: Gets the groups invitelink.\n"+
+					" - /promote: Promotes the user replied to.\n"+
+					" - /demote: Demotes the user replied to.\n")
 			break
 		case "bans":
 			msg.Text = "Here is the help for the <b>Bans</b> module:\n\n" +
-				" - /kickme: kicks the user who issued the command\n\n" +
+				" - /kickme: Kicks the user who issued the command.\n\n" +
 				"<b>Admin only</b>:\n" +
-				html.EscapeString(" - /ban <userhandle>: bans a user. (via handle, or reply)\n"+
-					" - /tban <userhandle> x(m/h/d): bans a user for x time. (via handle, or reply). m = minutes, h = hours,"+
+				html.EscapeString(" - /ban <userhandle>: Bans a user (via handle, or reply).\n"+
+					" - /tban <userhandle> x(m/h/d): Bans a user for x time (via handle, or reply). m = minutes, h = hours,"+
 					" d = days.\n"+
-					"- /unban <userhandle>: unbans a user. (via handle, or reply)"+
-					" - /kick <userhandle>: kicks a user, (via handle, or reply)")
+					" - /unban <userhandle>: Unbans a user (via handle, or reply)."+
+					" - /kick <userhandle>: Kicks a user (via handle, or reply).")
 
 			break
 		case "blacklist":
@@ -182,77 +182,119 @@ func buttonHandler(b ext.Bot, u *gotgbot.Update) error {
 				"Blacklists are used to stop certain triggers from being said in a group. Any time the trigger is " +
 				"mentioned, the message will immediately be deleted. A good combo is sometimes to pair this up with " +
 				"warn filters!\n\n" +
-				"<b>NOTE:</b> blacklists do not affect group admins.\n\n" +
+				"<b>NOTE:</b> Blacklists do not affect group admins.\n\n" +
 				" - /blacklist: View the current blacklisted words.\n\n" +
 				"<b>Admin only:</b>\n" +
-				html.EscapeString("- /addblacklist <triggers>: Add a trigger to the blacklist. Each line is "+
+				html.EscapeString(" - /addblacklist <triggers>: Adds a trigger to the blacklist. Each line is "+
 					"considered one trigger, so using different lines will allow you to add multiple triggers.\n"+
-					"- /unblacklist <triggers>: Remove triggers from the blacklist. Same newline logic applies here, "+
+					" - /unblacklist <triggers>: Removes triggers from the blacklist. Same newline logic applies here, "+
 					"so you can remove multiple triggers at once.\n"+
-					" - /rmblacklist <triggers>: Same as above.")
+					" - /rmblacklist <triggers>: Same as /unblacklist.")
 			break
 		case "deleting":
 			msg.Text = "Here is the help for the <b>Purges</b> module:\n\n" +
 				"<b>Admin only:</b>\n" +
-				" - /del: deletes the message you replied to\n" +
-				" - /purge: deletes all messages between this and the replied to message.\n"
+				" - /del: Deletes the message you replied to.\n" +
+				" - /purge: Deletes all messages between this and the replied to message.\n"
 			break
 		case "feds":
+			msg.Text = "Here is the help for the <b>Federations</b> module:\n\n" +
+				html.EscapeString("Ah, group management. It's all fun and games, until you start getting spammers in, and you need to ban them. " + "" +
+					"Then you need to start banning more, and more, and it gets painful. " +
+					"But then you have multiple groups, and you don't want these spammers in any of your groups - how can you deal? " +
+					"Do you have to ban them manually, in all your groups?\n\n" +
+					"No more! With federations, you can make a ban in one chat overlap to all your other chats." +
+					"You can even appoint federation admins, so that your trustworthiest admins can ban across all the chats that you want to protect.\n\n") +
+
+				html.EscapeString(" - /newfed <fedname>: Creates a new federation with the given name. Users are only allowed to own one federation. " +
+					"Using this method when you already have a fed will simply change the federation name.\n" +
+					" - /delfed: Deletes your federation, and any information relating to it. Will not unban any banned users.\n" +
+					" - /fedinfo <fedID>: Shows information about the specified federation.\n" +
+					" - /joinfed <fedID>: Joins the current chat to the federation. Each chat can only be in one federation. " +
+					"Only chat owners can do this.\n" +
+					" - /leavefed: Leaves the current federation. Only chat owners can do this.\n" +
+					" - /fedadmins <fedID>: Lists the admins in a federation.\n" +
+					" - /fedstat: Lists all the federations you've been banned from.\n" +
+					" - /fedstat <userhandle>: Lists all the federations the specified user has been banned from (also works with username, mention, and replies).\n" +
+					" - /fedstat <userhandle> <fedID>: Gives information on the specified user's ban reason in that federation. " +
+					"If no user is specified, checks the sender.\n" +
+					" - /chatfed: Gets information about the federation that the current chat is in.\n\n") +
+				"<b>Fed admin only:</b>\n" +
+				html.EscapeString(" - /fban <user>: Bans a user from the current chat's federation.\n" +
+					" - /unfban <user>: Unbans a user the current chat's federation.\n\n") +
+				"<b>Fed owner only:</b>\n" +
+				html.EscapeString(" - /fedpromote <userhandle>: Promotes the user to fed admin in your fed.\n" +
+					" - /feddemote <userhandle>: Demotes the user from fed admin to normal user, in your fed.")
 			break
 		case "misc":
+			msg.Text = "Here is the help for the <b>Misc</b> module:\n\n" +
+				html.EscapeString(" - /id <userhandle>: Gets the ID of a user or group.\n" +
+					" - /info <userhandle>: Displays info about a user.\n" +
+					" - /ping: Shows the ping of the bot.")
 			break
 		case "muting":
 			msg.Text = "Here is the help for the <b>Muting</b> module:\n\n" +
 				"<b>Admin only:</b>\n" +
-				html.EscapeString("- /mute <userhandle>: silences a user. Can also be used as a reply, muting the "+
+				html.EscapeString(" - /mute <userhandle>: Silences a user. Can also be used as a reply, muting the "+
 					"replied to user.\n"+
-					"- /tmute <userhandle> x(m/h/d): mutes a user for x time. (via handle, or reply). m = minutes, h = "+
+					" - /tmute <userhandle> x(m/h/d): Mutes a user for x time (via handle, or reply). m = minutes, h = "+
 					"hours, d = days.\n"+
-					"- /unmute <userhandle>: unmutes a user. Can also be used as a reply, muting the replied to user.")
+					" - /unmute <userhandle>: Unmutes a user. Can also be used as a reply, muting the replied to user.")
 			break
 		case "notes":
 			msg.Text = "Here is the help for the <b>Notes</b> module:\n\n" +
-				html.EscapeString("- /get <notename>: get the note with this notename\n"+
-					"- #<notename>: same as /get\n"+
-					"- /notes or /saved: list all saved notes in this chat\n\n"+
+				html.EscapeString(" - /get <notename>: Gets the note with this notename.\n"+
+					" - #<notename>: Same as /get.\n"+
+					" - /notes or /saved: Lists all saved notes in this chat.\n\n"+
 					"If you would like to retrieve the contents of a note without any formatting, use /get"+
 					" <notename> noformat. This can be useful when updating a current note.\n\n") +
 				"<b>Admin only:</b>\n" +
-				html.EscapeString(" - /save <notename> <notedata>: saves notedata as a note with name notename\n"+
+				html.EscapeString(" - /save <notename> <notedata>: Saves notedata as a note with name notename.\n"+
 					"A button can be added to a note by using standard markdown link syntax - the link should just "+
 					"be prepended with a buttonurl: section, as such: [somelink](buttonurl:example.com). Check "+
 					"/markdownhelp for more info.\n"+
-					" - /save <notename>: save the replied-to message as a note with name notename\n"+
-					" - /clear <notename>: clear note with this name")
+					" - /save <notename>: Saves the replied-to message as a note with name notename.\n"+
+					" - /clear <notename>: Clears note with this name.")
 			break
 		case "users":
 			break
 		case "warns":
 			msg.Text = "Here is the help for the <b>Warnings</b> module:\n\n" +
-				html.EscapeString(" - /warns <userhandle>: get a user's number, and reason, of warnings.\n"+
-					" - /warnlist: list of all current warning filters\n\n") +
+				html.EscapeString(" - /warns <userhandle>: Gets a user's number, and reason, of warnings.\n"+
+					" - /warnlist: Gets a list of all current warning filters.\n\n") +
 				"<b>Admin only:</b>\n" +
-				html.EscapeString("- /warn <userhandle>: warn a user. After the warn limit, the user will be banned from the group. "+
+				html.EscapeString(" - /warn <userhandle>: Warns a user. After the warn limit, the user will be banned from the group. "+
 					"Can also be used as a reply.\n"+
-					" - /resetwarn <userhandle>: reset the warnings for a user. Can also be used as a reply.\n"+
-					" - /addwarn <keyword> <reply message>: set a warning filter on a certain keyword. If you want your "+
+					" - /resetwarn <userhandle>: Resets the warnings for a user. Can also be used as a reply.\n"+
+					" - /addwarn <keyword> <reply message>: Sets a warning filter on a certain keyword. If you want your "+
 					"keyword to be a sentence, encompass it with quotes, as such: /addwarn \"very angry\" "+
 					"This is an angry user.\n"+
-					"- /nowarn <keyword>: stop a warning filter\n"+
-					"- /warnlimit <num>: set the warning limit\n"+
+					" - /nowarn <keyword>: Stops a warning filter\n"+
+					" - /warnlimit <num>: Sets the warning limit\n"+
 					" - /strongwarn <on/yes/off/no>: If set to on, exceeding the warn limit will result in a ban. "+
 					"Else, will just kick.\n")
 			break
+		case "globalbans":
+			msg.Text = "Here is the help for the <b>Global Bans</b> module:\n\n" +
+				"<b>Admin only:</b>\n" +
+				html.EscapeString(" - /gbanstat <on/off/yes/no>: Will disable the effect of global bans on your group, or return your current settings.\n\n") +
+				"<b>Sudo only:</b>\n" +
+				html.EscapeString(" - /gban <userhandle>: globally bans a user. (via handle, or reply) \n" +
+					" - /unban <userhandle>: unbans a globally banned user. (via handle, or reply) \n\n" +
+					"Gbans, also known as global bans, are used by the bot owners to ban spammers across all groups. " +
+					"This helps protect you and your groups by removing spam flooders as quickly as possible. " +
+					"They can be disabled for you group by calling /gbanstat")
+			break
 		case "back":
-			msg.Text = "Hey there! I'm Maya, a group management bot written in Go." +
-				"I have a ton of useful features like notes, filters and even a warn system.\n\n" +
-				"Commands are preceded with a slash (/) or an exclamation mark (!)\n\n" +
-				"Some basic commands:\n\n" +
-				"- /start: duh, you already know what this does\n\n" +
-				"- /help: for info on how to use me\n\n" +
-				"- /donate: info on who made me and how you can support them\n\n\n" +
-				"If you have any bugs reports, questions or suggestions you can message me @NicoFranke.\n\n" +
-				"Have fun using me!"
+			msg.Text = "Hey there! I'm Maya, a group management bot written in Go,"+
+			"here to help you manage your groups!\n" +
+				"I have a ton of useful features, such as a note keeping system, administration, filters and even a warn system.\n\n"+
+				"Commands are preceded with a slash (/) or an exclamation mark (!)\n\n"+
+				"Some basic commands:\n"+
+				" - /start: duh, you already know what this does\n"+
+				" - /help: for info on how to use me\n"+
+				" - /donate: info on who made me and how you can support them\n\n"+
+				"If you have any bugs reports, questions or suggestions you can message me (@NicoFranke)."
 			msg.ReplyMarkup = &markup
 			break
 		}
