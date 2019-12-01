@@ -101,6 +101,10 @@ func IsUserHuman(userID, chatID string) bool {
 }
 
 func SetWelcPref(chatID string, pref bool) {
-	w := &Welcome{ChatId: chatID, ShouldWelcome:pref}
-	SESSION.Save(w)
+	w := &Welcome{ChatId: chatID}
+	tx := SESSION.Begin()
+	tx.FirstOrCreate(w)
+	w.ShouldWelcome = pref
+	tx.Save(w)
+	tx.Commit()
 }
