@@ -1,16 +1,16 @@
 /*
  *   Copyright 2019 ATechnoHazard  <amolele@gmail.com>
- *     
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
  *   in the Software without restriction, including without limitation the rights
  *   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *   copies of the Software, and to permit persons to whom the Software is
  *   furnished to do so, subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,7 +24,7 @@ package welcome
 
 import (
 	"github.com/ZerNico/Maya/go_bot/modules/sql"
-    "github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/helpers"
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
@@ -57,6 +57,11 @@ func welcome(bot ext.Bot, u *gotgbot.Update, args []string) error {
 		welcPrefs.CleanWelcome != 0,
 		welcPrefs.DelJoined,
 		welcPrefs.ShouldMute)
+
+		if welcPrefs.CustomWelcome == "" {
+			_, err := u.EffectiveMessage.ReplyText(sql.DefaultWelcome)
+			return err
+		}
 
 		if welcPrefs.WelcomeType == sql.BUTTON_TEXT {
 			buttons := sql.GetWelcomeButtons(strconv.Itoa(chat.Id))
