@@ -35,6 +35,11 @@ import (
 func welcome(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	chat := u.EffectiveChat
 
+	if u.EffectiveChat.Type == "private" {
+		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
+		return err
+	}
+
 	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		_, err := u.EffectiveMessage.ReplyText("You must be an admin to perform this action!")
 		return err
@@ -76,7 +81,7 @@ func welcome(bot ext.Bot, u *gotgbot.Update, args []string) error {
 			return err
 		case "off", "no":
 			go sql.SetWelcPref(strconv.Itoa(chat.Id), false)
-			_, err := u.EffectiveMessage.ReplyText("I'll welcome users from now on.")
+			_, err := u.EffectiveMessage.ReplyText("I'll not welcome users anymore.")
 			return err
 		default:
 			_, err := u.EffectiveMessage.ReplyText("I understand 'on/yes' or 'off/no' only!")
