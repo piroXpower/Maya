@@ -121,7 +121,7 @@ func globalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 				chat, err := bot.GetChat(chatId)
 				error_handling.HandleErr(err)
 				if chat_status.IsBotAdmin(chat, nil) &&
-					!chat_status.IsUserAdmin(chat, u.EffectiveUser.Id, nil) &&
+					!chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) &&
 					sql.DoesChatGban(chatIdStr){
 					_, err = bot.KickChatMember(chatId, userId)
 					if err != nil {
@@ -228,7 +228,7 @@ func globalCheckBan(bot ext.Bot, u *gotgbot.Update) error {
 
 	chatId := strconv.Itoa(chat.Id)
 
-	if chat_status.IsUserAdmin(chat, u.EffectiveUser.Id, nil) {
+	if chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		return gotgbot.ContinueGroups{}
 	}
 

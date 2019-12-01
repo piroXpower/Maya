@@ -23,6 +23,9 @@
 package main
 
 import (
+	"github.com/PaulSonOfLars/gotgbot"
+	"github.com/PaulSonOfLars/gotgbot/ext"
+	"github.com/PaulSonOfLars/gotgbot/handlers"
 	"github.com/ZerNico/Maya/go_bot"
 	"github.com/ZerNico/Maya/go_bot/modules/admin"
 	"github.com/ZerNico/Maya/go_bot/modules/bans"
@@ -36,12 +39,10 @@ import (
 	"github.com/ZerNico/Maya/go_bot/modules/notes"
 	"github.com/ZerNico/Maya/go_bot/modules/sql"
 	"github.com/ZerNico/Maya/go_bot/modules/users"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/caching"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/ZerNico/Maya/go_bot/modules/warns"
 	"github.com/ZerNico/Maya/go_bot/modules/welcome"
-	"github.com/PaulSonOfLars/gotgbot"
-	"github.com/PaulSonOfLars/gotgbot/ext"
-	"github.com/PaulSonOfLars/gotgbot/handlers"
 	"log"
 )
 
@@ -55,6 +56,10 @@ func main() {
 
 	// Create database tables if not already existing
 	sql.EnsureBotInDb(u)
+
+	// Prepare Caching Service
+	caching.InitCache()
+	caching.InitRedis()
 
 	// Add module handlers
 	bans.LoadBans(u)
