@@ -183,4 +183,5 @@ func LoadWelcome(u *gotgbot.Updater) {
 	u.Dispatcher.AddHandler(handlers.NewPrefixCommand("setwelcome", []rune{'!', '/'}, setWelcome))
 	u.Dispatcher.AddHandler(handlers.NewPrefixCommand("resetwelcome", []rune{'!', '/'}, resetWelcome))
 	u.Dispatcher.AddHandler(handlers.NewPrefixArgsCommand("cleanwelcome", []rune{'!', '/'}, cleanWelcome))
+	u.Dispatcher.AddHandler(handlers.NewPrefixArgsCommand("deljoined", []rune{'!', '/'}, delJoined))
 }
