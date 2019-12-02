@@ -23,12 +23,13 @@
 package go_bot
 
 import (
-	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
