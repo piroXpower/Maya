@@ -25,11 +25,13 @@ package chat_status
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/PaulSonOfLars/gotgbot/ext"
+	"strconv"
+
 	"github.com/ZerNico/Maya/go_bot"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/caching"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
-	"strconv"
+
+	"github.com/PaulSonOfLars/gotgbot/ext"
 )
 
 type Cache struct {
@@ -63,18 +65,12 @@ func IsUserAdmin(chat *ext.Chat, userId int) bool {
 		return true
 	}
 
-	admins, err := caching.CACHE.Get(fmt.Sprintf("admin_%v", chat.Id))
-	if err != nil {
-		cacheAdmins(chat)
-	}
+	admins, _ := caching.CACHE.Get(fmt.Sprintf("admin_%v", chat.Id))
+	go cacheAdmins(chat)
 
 	var adminList Cache
 	_ = json.Unmarshal(admins, &adminList)
-	if contains(adminList.Admin, strconv.Itoa(userId)) {
-		return true
-	}
-
-	return false
+	return contains(adminList.Admin, strconv.Itoa(userId))
 }
 
 func IsBotAdmin(chat *ext.Chat, member *ext.ChatMember) bool {
