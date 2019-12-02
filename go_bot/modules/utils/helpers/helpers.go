@@ -24,11 +24,13 @@ package helpers
 
 import (
 	"fmt"
-	"github.com/ZerNico/Maya/go_bot/modules/sql"
-	tg_md2html "github.com/PaulSonOfLars/gotg_md2html"
-	"github.com/PaulSonOfLars/gotgbot/ext"
 	"html"
 	"strings"
+
+	"github.com/ZerNico/Maya/go_bot/modules/sql"
+
+	tg_md2html "github.com/PaulSonOfLars/gotg_md2html"
+	"github.com/PaulSonOfLars/gotgbot/ext"
 )
 
 var MaxMessageLength = 4096

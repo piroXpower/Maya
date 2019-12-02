@@ -22,8 +22,6 @@
 
 package sql
 
-import "log"
-
 const DefaultWelcome = "Hey {first}, how are you?"
 
 type Welcome struct {
@@ -112,7 +110,7 @@ func SetWelcPref(chatID string, pref bool) {
 }
 
 // SetCustomWelcome Set the custom welcome string
-func SetCustomWelcome(chatID string, welcome string, buttons []WelcomeButton) {
+func SetCustomWelcome(chatID string, welcome string, buttons []WelcomeButton, welcType int) {
 	w := &Welcome{ChatId: chatID}
 	if buttons == nil {
 		buttons = make([]WelcomeButton, 0)
@@ -131,7 +129,7 @@ func SetCustomWelcome(chatID string, welcome string, buttons []WelcomeButton) {
 
 	tx.FirstOrCreate(w)
 	w.CustomWelcome = welcome
+	w.WelcomeType = welcType
 	tx.Save(w)
-	log.Println(w)
 	tx.Commit()
 }
