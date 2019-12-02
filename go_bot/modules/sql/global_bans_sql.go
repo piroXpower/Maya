@@ -42,26 +42,13 @@ func UnGbanUser(userId string) {
 	SESSION.Delete(ban)
 }
 
-func IsUserGbanned(userId string) bool {
-	user := &GlobalBan{UserId: userId}
-	if SESSION.First(user).RowsAffected == 0 {
-		return false
-	}
-	return true
-}
-
-func EnableGban(chatId string) {
-	chat := &GlobalBanSetting{ChatId: chatId}
-	SESSION.FirstOrCreate(chat)
-	chat.Setting = true
-	SESSION.Save(chat)
-}
-
-func DisableGban(chatId string) {
-	chat := &GlobalBanSetting{ChatId: chatId}
-	SESSION.FirstOrCreate(chat)
-	chat.Setting = false
-	SESSION.Save(chat)
+func SetGBanPref(chatID string, pref bool) {
+	g := &GlobalBanSetting{ChatId: chatID}
+	tx := SESSION.Begin()
+	tx.FirstOrCreate(g)
+	g.Setting = pref
+	tx.Save(g)
+	tx.Commit()
 }
 
 func DoesChatGban(chatId string) bool {

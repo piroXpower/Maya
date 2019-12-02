@@ -39,34 +39,32 @@ import (
 	"strings"
 )
 
-var gbanErrors = []string {
-	"Bad Request: Chat not found",
-	"Bad Request: not enough rights to restrict/unrestrict chat member",
-	"Bad Request: User_not_participant",
-	"Bad Request: Peer_id_invalid",
-	"Bad Request: Group chat was deactivated",
-	"Bad Request: Need to be inviter of a user to kick it from a basic group",
-	"Bad Request: Chat_admin_required",
-	"Bad Request: Only the creator of a basic group can kick group administrators",
-	"Bad Request: Channel_private",
-	"Bad Request: Not in the chat",
+var gbanErrors = map[string]struct{}{
+	"Bad Request: Chat not found": {},
+	"Bad Request: not enough rights to restrict/unrestrict chat member": {},
+	"Bad Request: User_not_participant": {},
+	"Bad Request: Peer_id_invalid": {},
+	"Bad Request: Group chat was deactivated": {},
+	"Bad Request: Need to be inviter of a user to kick it from a basic group": {},
+	"Bad Request: Chat_admin_required": {},
+	"Bad Request: Only the creator of a basic group can kick group administrators": {},
+	"Bad Request: Channel_private": {},
+	"Bad Request: Not in the chat": {},
 }
 
-var unGbanErrors = []string {
-	"Bad Request: User is an administrator of the chat",
-	"Bad Request: Chat not found",
-	"Bad Request: Not enough rights to restrict/unrestrict chat member",
-	"Bad Request: User_not_participant",
-	"Bad Request: Method is available for supergroup and channel chats only",
-	"Bad Request: Not in the chat",
-	"Bad Request: Channel_private",
-	"Bad Request: Chat_admin_required",
-	"Bad Request: Peer_id_invalid",
+var unGbanErrors = map[string]struct{}{
+	"Bad Request: User is an administrator of the chat": {},
+	"Bad Request: Chat not found": {},
+	"Bad Request: Not enough rights to restrict/unrestrict chat member": {},
+	"Bad Request: User_not_participant": {},
+	"Bad Request: Method is available for supergroup and channel chats only": {},
+	"Bad Request: Not in the chat": {},
+	"Bad Request: Channel_private": {},
+	"Bad Request: Chat_admin_required": {},
+	"Bad Request: Peer_id_invalid": {},
 }
 
 func globalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
-
-	//chat := u.EffectiveChat
 	user := u.EffectiveUser
 	msg := u.EffectiveMessage
 
@@ -77,14 +75,17 @@ func globalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 		return err
 	}
 
-	if user.Id != go_bot.BotConfig.OwnerId {
-		for _, id := range go_bot.BotConfig.SudoUsers {
-			sudoId, _ := strconv.Atoi(id)
-			if user.Id != sudoId {
-				_, err := msg.ReplyText("You don't have permissions to gban!")
-				return err
-			}
-		}
+	sudos := go_bot.BotConfig.SudoUsers
+	sudos = append(sudos, strconv.Itoa(go_bot.BotConfig.OwnerId))
+
+	if !helpers.Contains(sudos, strconv.Itoa(user.Id)) {
+		_, err := msg.ReplyText("You don't have permissions to gban!")
+		return err
+	}
+
+	if userId == go_bot.BotConfig.OwnerId {
+		_, err := msg.ReplyText("I'm not gbanning my owner!")
+		return err
 	}
 
 	for _, id := range go_bot.BotConfig.SudoUsers {
@@ -96,11 +97,6 @@ func globalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	}
 
 	gbannedUser := sql.GetGbanUser(strconv.Itoa(userId))
-
-	if userId == go_bot.BotConfig.OwnerId {
-		_, err := msg.ReplyText("I'm not gbanning my owner!")
-		return err
-	}
 
 	if reason == "" {
 		reason = "No reason."
@@ -112,7 +108,7 @@ func globalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	if gbannedUser == nil {
 		_, err := msg.ReplyHTMLf("%v has been globally banned.", helpers.MentionHtml(member.Id, member.FirstName))
 		error_handling.HandleErr(err)
-		go func(bot ext.Bot, user *ext.Chat, userId int, reason string) {
+		go func(bot ext.Bot, userId int, gbanErrors map[string]struct{}) {
 			for _, chatIdStr := range sql.AllChats() {
 
 				chatId, err := strconv.Atoi(chatIdStr)
@@ -121,39 +117,38 @@ func globalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 				chat, err := bot.GetChat(chatId)
 				error_handling.HandleErr(err)
 				if chat_status.IsBotAdmin(chat, nil) &&
-					!chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) &&
-					sql.DoesChatGban(chatIdStr){
+					!chat_status.IsUserAdmin(chat, userId) &&
+					sql.DoesChatGban(chatIdStr) {
 					_, err = bot.KickChatMember(chatId, userId)
 					if err != nil {
-						if !helpers.Contains(gbanErrors, err.Error()) {
+						if _, contains := gbanErrors[err.Error()]; !contains {
 							error_handling.HandleErr(err)
 						}
 					}
 				}
 			}
-		}(bot, member, userId, reason)
+		}(bot, userId, gbanErrors)
 
-		sudos := go_bot.BotConfig.SudoUsers
-		sudos = append(sudos, strconv.Itoa(go_bot.BotConfig.OwnerId))
+		go func (bot ext.Bot, user *ext.User, member *ext.Chat, reason string, sudos []string) {
+			for _, sudo := range sudos {
+				sudoId, _ := strconv.Atoi(sudo)
+				_, _ = bot.SendMessageHTML(sudoId, fmt.Sprintf("<b>New GBan</b>"+
+					"\n<b>Banner</b>: %v"+
+					"\n<b>User</b>: %v"+
+					"\n<b>User ID</b>: <code>%v</code>"+
+					"\n<b>Reason</b>: %v", helpers.MentionHtml(user.Id, user.FirstName), helpers.MentionHtml(member.Id, member.FirstName),
+					member.Id, reason))
+			}
+		}(bot, user, member, reason, sudos)
 
-		for _, sudo := range sudos {
-			sudoId, _ := strconv.Atoi(sudo)
-			_, err = bot.SendMessageHTML(sudoId, fmt.Sprintf("<b>New GBan</b>"+
-				"\n<b>Banner</b>: %v"+
-				"\n<b>User</b>: %v"+
-				"\n<b>User ID</b>: <code>%v</code>"+
-				"\n<b>Reason</b>: %v", helpers.MentionHtml(user.Id, user.FirstName), helpers.MentionHtml(member.Id, member.FirstName),
-				member.Id, reason))
-		}
-		return err
 	} else {
 		_, err := msg.ReplyHTMLf("Reason of %v's GBan has been changed to %v", helpers.MentionHtml(member.Id, member.FirstName), reason)
 		return err
 	}
+	return nil
 }
 
 func unGlobalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
-	//chat := u.EffectiveChat
 	user := u.EffectiveUser
 	msg := u.EffectiveMessage
 
@@ -164,14 +159,17 @@ func unGlobalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 		return err
 	}
 
-	if user.Id != go_bot.BotConfig.OwnerId {
-		for _, id := range go_bot.BotConfig.SudoUsers {
-			sudoId, _ := strconv.Atoi(id)
-			if user.Id != sudoId {
-				_, err := msg.ReplyText("You don't have permissions to gban!")
-				return err
-			}
-		}
+	sudos := go_bot.BotConfig.SudoUsers
+	sudos = append(sudos, strconv.Itoa(go_bot.BotConfig.OwnerId))
+
+	if !helpers.Contains(sudos, strconv.Itoa(user.Id)) {
+		_, err := msg.ReplyText("You don't have permissions to ungban!")
+		return err
+	}
+
+	if userId == go_bot.BotConfig.OwnerId {
+		_, err := msg.ReplyText("I'm not gbanning my owner!")
+		return err
 	}
 
 	for _, id := range go_bot.BotConfig.SudoUsers {
@@ -184,11 +182,6 @@ func unGlobalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 
 	gbannedUser := sql.GetGbanUser(strconv.Itoa(userId))
 
-	if userId == go_bot.BotConfig.OwnerId {
-		_, err := msg.ReplyText("I'm not gbanning my owner!")
-		return err
-	}
-
 	if gbannedUser == nil {
 		_, err := msg.ReplyText("This user isn't gbanned")
 		return err
@@ -198,7 +191,7 @@ func unGlobalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 
 	member, _ := bot.GetChat(userId)
 
-	go func(bot ext.Bot, user *ext.Chat, userId int) {
+	go func(bot ext.Bot, user int, unGbanErrors map[string]struct{}) {
 		for _, chatIdStr := range sql.AllChats() {
 
 			chatId, err := strconv.Atoi(chatIdStr)
@@ -206,16 +199,18 @@ func unGlobalBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 
 			chat, err := bot.GetChat(chatId)
 			error_handling.HandleErr(err)
-			if chat.Type != "private"{
+			if chat_status.IsBotAdmin(chat, nil) &&
+				!chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) &&
+				sql.DoesChatGban(chatIdStr) {
 				_, err = bot.UnbanChatMember(chatId, userId)
 				if err != nil {
-					if !helpers.Contains(unGbanErrors, err.Error()) {
+					if _, contains := unGbanErrors[err.Error()]; !contains {
 						error_handling.HandleErr(err)
 					}
 				}
 			}
 		}
-	}(bot, member, userId)
+	}(bot, userId, unGbanErrors)
 
 	_, err := msg.ReplyHTMLf("%v has been globally unbanned.", helpers.MentionHtml(member.Id, member.FirstName))
 	return err
@@ -252,43 +247,41 @@ func globalCheckBan(bot ext.Bot, u *gotgbot.Update) error {
 }
 
 func gbanStat(bot ext.Bot, u *gotgbot.Update, args []string) error {
+
 	chat := u.EffectiveChat
-	user := u.EffectiveUser
-	msg := u.EffectiveMessage
-
-	chatId := strconv.Itoa(chat.Id)
-
-	var opt string
-
-	rawText := strings.SplitAfter(msg.Text, " ")
-	if len(rawText) == 2 {
-		opt = rawText[1]
-	} else {
-		opt = ""
-	}
 
 	if u.EffectiveChat.Type == "private" {
 		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
 		return err
 	}
 
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
-		return gotgbot.EndGroups{}
+	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
+		_, err := u.EffectiveMessage.ReplyText("You must be an admin to perform this action!")
+		return err
 	}
 
-	if helpers.Contains([]string {"on", "yes",}, strings.ToLower(opt)) {
-		sql.EnableGban(chatId)
-		_, err := msg.ReplyText("I've enabled gbans in this group.")
+	if len(args) == 0 {
+		gbanPrefs := sql.DoesChatGban(strconv.Itoa(chat.Id))
+		_, err := u.EffectiveMessage.ReplyHTMLf("I am currently gbanning people in this group: <code>%v</code>",
+			gbanPrefs)
 		return err
-	} else if helpers.Contains([]string {"off", "no",}, strings.ToLower(opt)) {
-		sql.DisableGban(chatId)
-		_, err := msg.ReplyText("I've disabled gbans in this group.")
-		return err
-	} else {
-		_, err := msg.ReplyTextf("Give me some arguments to choose a setting! on/off, yes/no!\n\n" +
-			"Your current setting is: %v", sql.DoesChatGban(chatId))
-		return err
+
+	} else if len(args) >= 1 {
+		switch strings.ToLower(args[0]){
+		case "on", "yes":
+			go sql.SetGBanPref(strconv.Itoa(chat.Id), true)
+			_, err := u.EffectiveMessage.ReplyText("I'll gban users in this chat now.")
+			return err
+		case "off", "no":
+			go sql.SetGBanPref(strconv.Itoa(chat.Id), false)
+			_, err := u.EffectiveMessage.ReplyText("I'll not gban users in this chat anymore.")
+			return err
+		default:
+			_, err := u.EffectiveMessage.ReplyText("I understand 'on/yes' or 'off/no' only!")
+			return err
+		}
 	}
+	return nil
 }
 
 func LoadGlobalBans(u *gotgbot.Updater) {
