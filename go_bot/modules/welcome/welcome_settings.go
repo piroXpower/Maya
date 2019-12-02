@@ -37,6 +37,11 @@ import (
 func welcome(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	chat := u.EffectiveChat
 
+	if u.EffectiveChat.Type == "private" {
+		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
+		return err
+	}
+
 	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		_, _ = u.EffectiveMessage.ReplyText("You need to be an admin to do this.")
 		return gotgbot.ContinueGroups{}
@@ -92,6 +97,11 @@ func setWelcome(_ ext.Bot, u *gotgbot.Update) error {
 	chat := u.EffectiveChat
 	msg := u.EffectiveMessage
 
+	if u.EffectiveChat.Type == "private" {
+		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
+		return err
+	}
+
 	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		_, _ = u.EffectiveMessage.ReplyText("You need to be an admin to do this.")
 		return gotgbot.ContinueGroups{}
@@ -125,6 +135,12 @@ func setWelcome(_ ext.Bot, u *gotgbot.Update) error {
 
 func resetWelcome(_ ext.Bot, u *gotgbot.Update) error {
 	chat := u.EffectiveChat
+
+	if u.EffectiveChat.Type == "private" {
+		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
+		return err
+	}
+
 	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		_, _ = u.EffectiveMessage.ReplyText("You need to be an admin to do this.")
 		return gotgbot.ContinueGroups{}
@@ -138,6 +154,12 @@ func resetWelcome(_ ext.Bot, u *gotgbot.Update) error {
 
 func cleanWelcome(_ ext.Bot, u *gotgbot.Update, args []string) error {
 	chat := u.EffectiveChat
+
+	if u.EffectiveChat.Type == "private" {
+		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
+		return err
+	}
+
 	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		_, _ = u.EffectiveMessage.ReplyText("You need to be an admin to do this.")
 		return gotgbot.ContinueGroups{}
@@ -171,6 +193,12 @@ func cleanWelcome(_ ext.Bot, u *gotgbot.Update, args []string) error {
 
 func delJoined(_ ext.Bot, u *gotgbot.Update, args []string) error {
 	chat := u.EffectiveChat
+
+	if u.EffectiveChat.Type == "private" {
+		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
+		return err
+	}
+
 	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		_, _ = u.EffectiveMessage.ReplyText("You need to be an admin to do this.")
 		return gotgbot.ContinueGroups{}
@@ -204,6 +232,12 @@ func delJoined(_ ext.Bot, u *gotgbot.Update, args []string) error {
 
 func welcomeMute(_ ext.Bot, u *gotgbot.Update, args []string) error {
 	chat := u.EffectiveChat
+
+	if u.EffectiveChat.Type == "private" {
+		_, err := u.EffectiveMessage.ReplyText("This command is meant to be used in a group!")
+		return err
+	}
+
 	if !chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
 		_, _ = u.EffectiveMessage.ReplyText("You need to be an admin to do this.")
 		return gotgbot.ContinueGroups{}
