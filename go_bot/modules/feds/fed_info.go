@@ -29,7 +29,7 @@ import (
 	"github.com/ZerNico/Maya/go_bot/modules/sql"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/extraction"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/helpers"
-	
+
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 )

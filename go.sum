@@ -2,9 +2,12 @@ cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMT
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.37.4 h1:glPeL3BQJsbF6aIIYfZizMwc5LTYz250bDMjttbBGAU=
 cloud.google.com/go v0.37.4/go.mod h1:NHPJ89PdicEuT9hdPXMROBD91xc5uRDxsMtSB16k7hw=
+github.com/ATechnoHazard/ginko v1.0.0 h1:emGP0tvt3tQsj4/EMVztguHFwz5UmOdCW/78omXzsqs=
+github.com/ATechnoHazard/ginko v1.0.0/go.mod h1:WFdJTGAHAJauIbEuxGjw9khx0sSAh8QwCm8IFRPHXoo=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/PaulSonOfLars/gotg_md2html v0.0.0-20190928101618-7d177d22631c h1:r19NXTTAugrfNwNpYWeYhup9O3inzEj2wtJrzf3Qtps=
 github.com/PaulSonOfLars/gotg_md2html v0.0.0-20190928101618-7d177d22631c/go.mod h1:PzvK5o/e0VFEoHpLetq2TeFsx++LalXBfAX1+V/52Rs=
+github.com/PaulSonOfLars/gotgbot v0.0.0-20191013160946-137f6d2752cc/go.mod h1:HJ3VsiIwK21ZsJai6/W/iCzkkjne0Xb+bJTw+gw2OF4=
 github.com/PaulSonOfLars/gotgbot v0.0.0-20191117224821-883066135bc6 h1:9HIsuRU2MRd3Q87SfGtmiJbYPoLycj0BcvjI4O9qTVY=
 github.com/PaulSonOfLars/gotgbot v0.0.0-20191117224821-883066135bc6/go.mod h1:HJ3VsiIwK21ZsJai6/W/iCzkkjne0Xb+bJTw+gw2OF4=
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
@@ -142,6 +145,7 @@ golang.org/x/sys v0.0.0-20181116152217-5ac8a444bdc5/go.mod h1:STP8DvDyc/dI5b8T5h
 golang.org/x/sys v0.0.0-20181122145206-62eef0e2fa9b/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20191010194322-b09406accb47/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e h1:N7DeIrjYszNmSW409R3frPPwglRwMkXSBzwVbkOjLLA=
 golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
