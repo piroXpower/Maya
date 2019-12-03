@@ -23,9 +23,8 @@
 package main
 
 import (
-	"github.com/PaulSonOfLars/gotgbot"
-	"github.com/PaulSonOfLars/gotgbot/ext"
-	"github.com/PaulSonOfLars/gotgbot/handlers"
+	"log"
+
 	"github.com/ZerNico/Maya/go_bot"
 	"github.com/ZerNico/Maya/go_bot/modules/admin"
 	"github.com/ZerNico/Maya/go_bot/modules/bans"
@@ -43,7 +42,10 @@ import (
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/ZerNico/Maya/go_bot/modules/warns"
 	"github.com/ZerNico/Maya/go_bot/modules/welcome"
-	"log"
+
+	"github.com/PaulSonOfLars/gotgbot"
+	"github.com/PaulSonOfLars/gotgbot/ext"
+	"github.com/PaulSonOfLars/gotgbot/handlers"
 )
 
 func main() {
@@ -76,9 +78,27 @@ func main() {
 	globalBans.LoadGlobalBans(u)
 	welcome.LoadWelcome(u)
 
-	log.Println("Starting long polling")
-	err = u.StartPolling()
-	error_handling.HandleErr(err)
+	if go_bot.BotConfig.Webhooks {
+		webhook := gotgbot.Webhook{
+			Serve:          go_bot.BotConfig.WebhookIP,
+			ServePort:      go_bot.BotConfig.WebhookPort,
+			ServePath:      u.Bot.Token,
+			URL:            go_bot.BotConfig.WebhookURL,
+			MaxConnections: 30,
+		}
+		log.Println("Starting webhook")
+		u.StartWebhook(webhook)
+		ok, err := u.SetWebhook(u.Bot.Token, webhook)
+		error_handling.FatalError(err)
+		if !ok {
+			log.Fatal("Failed to set webhook!")
+		}
+	} else {
+		log.Println("Starting long polling")
+		err = u.StartPolling()
+		error_handling.HandleErr(err)
+	}
+
 	u.Idle()
 }
 
