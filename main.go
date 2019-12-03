@@ -61,7 +61,7 @@ func main() {
 
 	// Prepare Caching Service
 	caching.InitCache()
-	caching.InitRedis()
+	//caching.InitRedis()
 
 	// Add module handlers
 	bans.LoadBans(u)
