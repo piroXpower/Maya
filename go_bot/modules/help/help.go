@@ -52,13 +52,26 @@ func initMarkdownHelp() {
 		"<code>[one](buttonurl://github.com)</code>\n" +
 		"<code>[two](buttonurl://google.com:same)</code>\n" +
 		"This will create two buttons on a single line, instead of one button per line.\n\n" +
-		"Keep in mind that your message MUST contain some text other than just a button!"
+		"Keep in mind that your message MUST contain some text other than just a button!\n\n" +
+		"Fillings:\n" +
+		"You can also use certain tags to fill your message with user or chat info; the options are:\n" +
+		"<code>{first}</code>: The user's first name.\n" +
+		"<code>{last}</code>: The user's last name.\n" +
+		"<code>{fullname}</code>: The user's full name.\n" +
+		"<code>{username}</code>: The user's username; if none is available, mentions the user.\n" +
+		"<code>{mention}</code>: Mentions the user, using their firstname.\n" +
+		"<code>{id}</code>: The user's id.\n" +
+		"<code>{chatname}</code>: The chat's name.\n" +
+	    "<code>{count}</code>: The count of users in chat.\n\n" +
+		"An example of how to use fillings would be to set your welcome, via:\n" +
+	    "<code>/setwelcome Hey there {first}! Welcome to {chatname}.</code>"
 
 }
 
 func initHelpButtons() {
 	helpButtons := [][]ext.InlineKeyboardButton{make([]ext.InlineKeyboardButton, 2), make([]ext.InlineKeyboardButton, 2),
-		make([]ext.InlineKeyboardButton, 2), make([]ext.InlineKeyboardButton, 2), make([]ext.InlineKeyboardButton, 2)}
+		make([]ext.InlineKeyboardButton, 2), make([]ext.InlineKeyboardButton, 2), make([]ext.InlineKeyboardButton, 2),
+		make([]ext.InlineKeyboardButton, 2)}
 
 	// First column
 	helpButtons[0][0] = ext.InlineKeyboardButton{
@@ -80,6 +93,10 @@ func initHelpButtons() {
 	helpButtons[4][0] = ext.InlineKeyboardButton{
 		Text:         "Federations",
 		CallbackData: fmt.Sprintf("help(%v)", "feds"),
+	}
+	helpButtons[5][0] = ext.InlineKeyboardButton{
+		Text:         "Welcome",
+		CallbackData: fmt.Sprintf("help(%v)", "welcome"),
 	}
 
 	// Second column
@@ -159,7 +176,7 @@ func buttonHandler(b ext.Bot, u *gotgbot.Update) error {
 		case "admin":
 			msg.Text = "Here is the help for the <b>Admin</b> module:\n\n" +
 				" - /adminlist: Lists all admins in the chat.\n\n" +
-				"<b>Admin only:</b>" +
+				"<b>Admin only:</b>\n" +
 				html.EscapeString("- /pin: Silently pins the message replied to - add 'loud' or 'notify' to give notifs to users.\n"+
 					" - /unpin: Unpins the currently pinned message.\n"+
 					" - /invitelink: Gets the groups invitelink.\n"+
@@ -284,6 +301,25 @@ func buttonHandler(b ext.Bot, u *gotgbot.Update) error {
 					"Gbans, also known as global bans, are used by the bot owners to ban spammers across all groups. " +
 					"This helps protect you and your groups by removing spam flooders as quickly as possible. " +
 					"They can be disabled for you group by calling /gbanstat")
+			break
+		case "welcome":
+			msg.Text = "Here is the help for the <b>Welcome</b> module:\n\n" +
+				html.EscapeString("Give your members a warm welcome with the welcome module!\n\n") +
+				"<b>Admin only:</b>\n" +
+				html.EscapeString(" - /welcome <on/off/yes/no>: enables/disables welcome messages. " +
+					"If no option is given, returns the current welcome message and welcome settings.\n" +
+					" - /setwelcome <message>: sets your new welcome message! Markdown and buttons are supported, as well as fillings.\n" +
+					" - /resetwelcome: resets your welcome message to default; deleting any changes you've made.\n" +
+					" - /cleanwelcome <on/off/yes/no>: deletes old welcome messages; when a new person joins, the old message is deleted.\n" +
+					" - /welcomemute <on/off/yes/no>: all users that join, get muted; a button gets added to the welcome message for them to unmute themselves. " +
+					"This proves they aren't a bot!\n\n" +
+					"Read /markdownhelp to learn about formatting your text and mentioning new users when they join!\n\n" +
+					"If you want to save an image, gif, or sticker, or any other data, do the following:\n") +
+				"<code>/setwelcome</code>" +
+			 html.EscapeString(" while replying to a sticker or whatever data you'd like. This data will now be sent to welcome new users.\n\n" +
+			 	"Tip: use /welcome noformat to retrieve the unformatted welcome message.\n" +
+			 	"This will retrieve the welcome message and send it without formatting it; " +
+			 	"getting you the raw markdown, allowing you to make easy edits.")
 			break
 		case "back":
 			msg.Text = "Hey there! I'm Maya, a group management bot written in Go,"+
