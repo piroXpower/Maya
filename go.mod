@@ -3,7 +3,6 @@ module github.com/ZerNico/Maya
 go 1.12
 
 require (
-	github.com/ATechnoHazard/ginko v1.0.0
 	github.com/PaulSonOfLars/gotg_md2html v0.0.0-20190928101618-7d177d22631c
 	github.com/PaulSonOfLars/gotgbot v0.0.0-20191117224821-883066135bc6
 	github.com/allegro/bigcache v1.2.1
