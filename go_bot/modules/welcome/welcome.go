@@ -53,10 +53,12 @@ var EnumFuncMap = map[int]func(ext.Bot, int, string) (*ext.Message, error){
 	sql.VIDEO:       ext.Bot.SendVideoStr,
 }
 
-func send(bot ext.Bot, u *gotgbot.Update, message string, keyboard *ext.InlineKeyboardMarkup, backupMessage string) *ext.Message {
+func send(bot ext.Bot, u *gotgbot.Update, message string, keyboard *ext.InlineKeyboardMarkup, backupMessage string, reply bool) *ext.Message {
 	msg := bot.NewSendableMessage(u.EffectiveChat.Id, message)
 	msg.ParseMode = parsemode.Html
-	msg.ReplyToMessageId = u.EffectiveMessage.MessageId
+	if reply {
+		msg.ReplyToMessageId = u.EffectiveMessage.MessageId
+	}
 	msg.ReplyMarkup = keyboard
 	m, err := msg.Send()
 	if err != nil {
@@ -149,7 +151,7 @@ func newMember(bot ext.Bot, u *gotgbot.Update) error {
 
 			keyboard := &ext.InlineKeyboardMarkup{InlineKeyboard: &keyb}
 			r := strings.NewReplacer("{first}", firstName)
-			sent := send(bot, u, res, keyboard, r.Replace(sql.DefaultWelcome))
+			sent := send(bot, u, res, keyboard, r.Replace(sql.DefaultWelcome), !welcPrefs.DelJoined)
 
 			if welcPrefs.CleanWelcome != 0 {
 				_, _ = bot.DeleteMessage(chat.Id, welcPrefs.CleanWelcome)
