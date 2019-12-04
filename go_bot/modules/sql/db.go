@@ -27,6 +27,7 @@ import (
 
 	"github.com/ZerNico/Maya/go_bot"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/lib/pq"
@@ -59,7 +60,7 @@ func init() {
 	// Create tables if they don't exist
 	SESSION.AutoMigrate(&User{}, &Chat{}, &Warns{}, &WarnFilters{}, &WarnSettings{}, &BlackListFilters{}, &Federation{},
 		&FedChat{}, &FedAdmin{}, &FedBan{}, &Note{}, &Button{}, &GlobalBan{}, &GlobalBanSetting{}, &Welcome{},
-		&WelcomeButton{}, &MutedUser{})
+		&WelcomeButton{}, &MutedUser{}, &Rules{})
 	log.Println("Auto-migrated database schema")
 
 }

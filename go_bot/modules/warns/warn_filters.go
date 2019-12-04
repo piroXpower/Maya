@@ -24,17 +24,19 @@ package warns
 
 import (
 	"fmt"
+	"html"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/ZerNico/Maya/go_bot/modules/sql"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/extraction"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/helpers"
+
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
-	"html"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
 func addWarnFilter(_ ext.Bot, u *gotgbot.Update) error {
@@ -152,6 +154,9 @@ func replyFilter(_ ext.Bot, u *gotgbot.Update) error {
 
 	if !chat_status.IsBotAdmin(chat, nil) {
 		return gotgbot.EndGroups{}
+	}
+	if chat_status.IsUserAdmin(chat, u.EffectiveUser.Id) {
+		return gotgbot.ContinueGroups{}
 	}
 
 	chatWarnFilters := sql.GetChatWarnTriggers(strconv.Itoa(chat.Id))
