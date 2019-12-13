@@ -24,14 +24,16 @@ package warns
 
 import (
 	"fmt"
-	"github.com/ZerNico/Maya/go_bot/modules/sql"
-	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
-	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
-	"github.com/PaulSonOfLars/gotgbot"
-	"github.com/PaulSonOfLars/gotgbot/ext"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/ZerNico/Maya/go_bot/modules/sql"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
+
+	"github.com/PaulSonOfLars/gotgbot"
+	"github.com/PaulSonOfLars/gotgbot/ext"
 )
 
 func setWarnLimit(_ ext.Bot, u *gotgbot.Update, args []string) error {
@@ -40,7 +42,7 @@ func setWarnLimit(_ ext.Bot, u *gotgbot.Update, args []string) error {
 	user := u.EffectiveUser
 
 	// Check permissions
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 	if !chat_status.RequireBotAdmin(chat, msg) {
@@ -78,7 +80,7 @@ func setWarnStrength(_ ext.Bot, u *gotgbot.Update, args []string) error {
 	user := u.EffectiveUser
 
 	// Check permissions
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 	if !chat_status.RequireBotAdmin(chat, msg) {

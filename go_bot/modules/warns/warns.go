@@ -24,19 +24,21 @@ package warns
 
 import (
 	"fmt"
+	"html"
+	"log"
+	"regexp"
+	"strconv"
+
 	"github.com/ZerNico/Maya/go_bot/modules/sql"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/extraction"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/helpers"
+
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 	"github.com/PaulSonOfLars/gotgbot/handlers"
 	"github.com/PaulSonOfLars/gotgbot/handlers/Filters"
 	"github.com/PaulSonOfLars/gotgbot/parsemode"
-	"html"
-	"log"
-	"regexp"
-	"strconv"
 )
 
 func warn(u *ext.User, c *ext.Chat, reason string, m *ext.Message) error {
@@ -104,7 +106,7 @@ func warnUser(_ ext.Bot, u *gotgbot.Update, args []string) error {
 	userId, reason := extraction.ExtractUserAndText(message, args)
 
 	// Check permissions
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 	if !chat_status.RequireBotAdmin(chat, msg) {
@@ -166,7 +168,7 @@ func resetWarns(_ ext.Bot, u *gotgbot.Update, args []string) error {
 	userId := extraction.ExtractUser(message, args)
 
 	// Check permissions
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 	if !chat_status.RequireBotAdmin(chat, msg) {

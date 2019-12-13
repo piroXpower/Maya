@@ -23,13 +23,15 @@
 package deleting
 
 import (
+	"log"
+	"time"
+
 	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
+
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 	"github.com/PaulSonOfLars/gotgbot/handlers"
-	"log"
-	"time"
 )
 
 func purge(bot ext.Bot, u *gotgbot.Update) error {
@@ -41,7 +43,7 @@ func purge(bot ext.Bot, u *gotgbot.Update) error {
 	if !chat_status.RequireBotAdmin(chat, msg) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 
@@ -93,7 +95,7 @@ func delMessage(bot ext.Bot, u *gotgbot.Update) error {
 	if !chat_status.RequireBotAdmin(chat, msg) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 

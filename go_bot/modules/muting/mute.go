@@ -23,16 +23,18 @@
 package muting
 
 import (
+	"log"
+	"strings"
+
 	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/extraction"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/helpers"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/string_handling"
+
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 	"github.com/PaulSonOfLars/gotgbot/handlers"
-	"log"
-	"strings"
 )
 
 func mute(bot ext.Bot, u *gotgbot.Update, args []string) error {
@@ -44,7 +46,7 @@ func mute(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	if !chat_status.RequireBotAdmin(chat, msg) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 
@@ -86,7 +88,7 @@ func unmute(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	if !chat_status.RequireBotAdmin(chat, msg) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 
@@ -126,7 +128,7 @@ func tempMute(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	if !chat_status.RequireBotAdmin(chat, msg) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, msg, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, msg, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 

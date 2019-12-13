@@ -23,15 +23,17 @@
 package bans
 
 import (
+	"log"
+	"strings"
+
 	"github.com/ZerNico/Maya/go_bot/modules/utils/chat_status"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/extraction"
 	"github.com/ZerNico/Maya/go_bot/modules/utils/string_handling"
+
 	"github.com/PaulSonOfLars/gotgbot"
 	"github.com/PaulSonOfLars/gotgbot/ext"
 	"github.com/PaulSonOfLars/gotgbot/handlers"
-	"log"
-	"strings"
 )
 
 func ban(bot ext.Bot, u *gotgbot.Update, args []string) error {
@@ -48,7 +50,7 @@ func ban(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	if !chat_status.RequireBotAdmin(chat, message) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, message, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, message, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 
@@ -105,7 +107,7 @@ func tempBan(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	if !chat_status.RequireBotAdmin(chat, message) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, message, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, message, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 
@@ -176,7 +178,7 @@ func kick(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	if !chat_status.RequireBotAdmin(chat, message) {
 		return gotgbot.EndGroups{}
 	}
-	if !chat_status.RequireUserAdmin(chat, message, user.Id, nil) {
+	if !chat_status.RequireUserAdmin(chat, message, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 
@@ -260,7 +262,7 @@ func unban(bot ext.Bot, u *gotgbot.Update, args []string) error {
 		return err
 	}
 
-	if !chat_status.RequireBotAdmin(chat, message) && chat_status.RequireUserAdmin(chat, message, user.Id, nil) {
+	if !chat_status.RequireBotAdmin(chat, message) && chat_status.RequireUserAdmin(chat, message, user.Id) {
 		return gotgbot.EndGroups{}
 	}
 
