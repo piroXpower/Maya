@@ -64,6 +64,10 @@ func mute(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	member, _ := chat.GetMember(userId)
 
 	if member != nil {
+		if !member.IsMember {
+			_, err := msg.ReplyText("This user is not in this group anymore")
+			return err
+		}
 		if chat_status.IsUserAdmin(chat, userId) {
 			_, err := msg.ReplyText("Afraid I can't stop an admin from talking!")
 			return err
@@ -103,6 +107,10 @@ func unmute(bot ext.Bot, u *gotgbot.Update, args []string) error {
 	error_handling.HandleErr(err)
 
 	if member != nil {
+		if !member.IsMember {
+			_, err := msg.ReplyText("This user is not in this group anymore")
+			return err
+		}
 		if chat_status.IsUserAdmin(chat, userId) {
 			_, err := msg.ReplyText("This is an admin, what do you expect me to do?")
 			return err
@@ -139,12 +147,17 @@ func tempMute(bot ext.Bot, u *gotgbot.Update, args []string) error {
 		return err
 	}
 
-	_, err := chat.GetMember(userId)
+	member, err := chat.GetMember(userId)
 	if err != nil {
 		if err.Error() == "User not found" {
 			_, err := msg.ReplyText("I can't seem to find this user!")
 			return err
 		}
+	}
+
+	if  member != nil && !member.IsMember {
+		_, err := msg.ReplyText("This user is not in this group anymore")
+		return err
 	}
 
 	if chat_status.IsUserAdmin(chat, userId) {
