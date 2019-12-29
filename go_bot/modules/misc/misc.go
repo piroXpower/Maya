@@ -24,16 +24,6 @@ package misc
 
 import (
 	"fmt"
-	"github.com/ZerNico/Maya/go_bot"
-	"github.com/ZerNico/Maya/go_bot/modules/sql"
-	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
-	"github.com/ZerNico/Maya/go_bot/modules/utils/extraction"
-	"github.com/ZerNico/Maya/go_bot/modules/utils/helpers"
-	"github.com/PaulSonOfLars/gotgbot"
-	"github.com/PaulSonOfLars/gotgbot/ext"
-	"github.com/PaulSonOfLars/gotgbot/handlers"
-	"github.com/sirupsen/logrus"
-	"github.com/tcnksm/go-httpstat"
 	"html"
 	"io"
 	"io/ioutil"
@@ -42,6 +32,19 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ZerNico/Maya/go_bot"
+	"github.com/ZerNico/Maya/go_bot/modules/sql"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/caching"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/error_handling"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/extraction"
+	"github.com/ZerNico/Maya/go_bot/modules/utils/helpers"
+
+	"github.com/PaulSonOfLars/gotgbot"
+	"github.com/PaulSonOfLars/gotgbot/ext"
+	"github.com/PaulSonOfLars/gotgbot/handlers"
+	"github.com/sirupsen/logrus"
+	"github.com/tcnksm/go-httpstat"
 )
 
 func getId(bot ext.Bot, u *gotgbot.Update, args []string) error {
@@ -139,6 +142,15 @@ func info(bot ext.Bot, u *gotgbot.Update, args []string) error {
 }
 
 func ping(_ ext.Bot, u *gotgbot.Update) error {
+	user := u.EffectiveUser
+
+	sudos := go_bot.BotConfig.SudoUsers
+	sudos = append(sudos, strconv.Itoa(go_bot.BotConfig.OwnerId))
+
+	if !helpers.Contains(sudos, strconv.Itoa(user.Id)) {
+		return nil
+	}
+
 	req, err := http.NewRequest("GET", "https://google.com", nil)
 	error_handling.HandleErr(err)
 
@@ -162,9 +174,31 @@ func ping(_ ext.Bot, u *gotgbot.Update) error {
 	return err
 }
 
+func clearCache(_ ext.Bot, u *gotgbot.Update) error {
+	user := u.EffectiveUser
+	msg := u.EffectiveMessage
+
+	sudos := go_bot.BotConfig.SudoUsers
+	sudos = append(sudos, strconv.Itoa(go_bot.BotConfig.OwnerId))
+
+	if !helpers.Contains(sudos, strconv.Itoa(user.Id)) {
+		return nil
+	}
+
+	err := caching.CACHE.Reset()
+	if err != nil {
+		_, err = msg.ReplyText("Cache couldn't be cleared!")
+		return err
+	}
+
+	_, err = msg.ReplyText("Cache has been cleared.")
+	return err
+}
+
 func LoadMisc(u *gotgbot.Updater) {
 	defer log.Println("Loading module misc")
 	u.Dispatcher.AddHandler(handlers.NewPrefixArgsCommand("id", []rune{'/', '!'}, getId))
 	u.Dispatcher.AddHandler(handlers.NewPrefixArgsCommand("info", []rune{'/', '!'}, info))
 	u.Dispatcher.AddHandler(handlers.NewPrefixCommand("ping", []rune{'/', '!'}, ping))
+	u.Dispatcher.AddHandler(handlers.NewPrefixCommand("clearcache", []rune{'/', '!'}, clearCache))
 }
