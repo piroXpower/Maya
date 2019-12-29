@@ -88,13 +88,14 @@ func AddNoteToDb(chatId string, noteName string, noteData string, msgtype int, b
 }
 
 func GetNote(chatId string, noteName string) *Note {
-	notes, err := caching.CACHE.Get(fmt.Sprintf("note_%v", chatId))
-	if err != nil {
-		go cacheNote(chatId, noteName)
-	}
-
 	var n []Note
-	_ = json.Unmarshal(notes, &n)
+
+	notes, err := caching.CACHE.Get(fmt.Sprintf("note_%v", chatId))
+	if err == nil {
+		_ = json.Unmarshal(notes, &n)
+	} else {
+		n = cacheNote(chatId, noteName)
+	}
 
 	for _, note := range n {
 		if note.Name == noteName {
@@ -109,6 +110,7 @@ func RmNote(chatId string, noteName string) bool {
 	tx := SESSION.Begin()
 	defer func() {
 		go cacheNote(chatId, noteName)
+		go cacheButton(chatId, noteName)
 	}()
 	note := &Note{ChatId: chatId, Name: noteName}
 
@@ -129,46 +131,64 @@ func RmNote(chatId string, noteName string) bool {
 }
 
 func GetAllChatNotes(chatId string) []Note {
+	var n []Note
 	notes, err := caching.CACHE.Get(fmt.Sprintf("note_%v", chatId))
-	if err != nil {
-		go cacheNote(chatId, "")
+	if err == nil {
+		_ = json.Unmarshal(notes, &n)
+	} else {
+		n = cacheNote(chatId, "")
 	}
 
-	var n []Note
-	_ = json.Unmarshal(notes, &n)
 	return n
 }
 
 func GetButtons(chatId string, noteName string) []Button {
-	buttons, err := caching.CACHE.Get(fmt.Sprintf("button_%v_%v", chatId, noteName))
-	if err != nil {
-		go cacheNote(chatId, noteName)
-	}
 	var btns []Button
-	_ = json.Unmarshal(buttons, &btns)
+
+	buttons, err := caching.CACHE.Get(fmt.Sprintf("button_%v_%v", chatId, noteName))
+	if err == nil {
+		_ = json.Unmarshal(buttons, &btns)
+	} else {
+		btns = cacheButton(chatId, noteName)
+	}
 
 	return btns
 }
 
-func cacheNote(chatId string, noteName string) {
+func cacheNote(chatId string, noteName string) []Note {
 	var notes []Note
-	var buttons []Button
-	if noteName != "" {
-		SESSION.Where(Button{ChatId: chatId, NoteName: noteName}).Find(&buttons)
-	}
+
 	SESSION.Where("chat_id = ?", chatId).Find(&notes)
 
-	if notes != nil {
-		if len(notes) != 0 {
-			nJson, _ := json.Marshal(notes)
-			_ = caching.CACHE.Set(fmt.Sprintf("note_%v", chatId), nJson)
+	go func(notes []Note) {
+		if notes != nil {
+			if len(notes) != 0 {
+				nJson, _ := json.Marshal(notes)
+				_ = caching.CACHE.Set(fmt.Sprintf("note_%v", chatId), nJson)
+			} else {
+				_ = caching.CACHE.Delete(fmt.Sprintf("note_%v", chatId))
+			}
 		}
-	}
+	}(notes)
 
-	if buttons != nil {
-		if len(buttons) != 0 {
-			nButtons, _ := json.Marshal(buttons)
-			_ = caching.CACHE.Set(fmt.Sprintf("button_%v_%v", chatId, noteName), nButtons)
+	return notes
+}
+
+func cacheButton(chatId string, noteName string) []Button {
+	var buttons []Button
+
+	SESSION.Where(Button{ChatId: chatId, NoteName: noteName}).Find(&buttons)
+
+	go func(buttons []Button) {
+		if buttons != nil {
+			if len(buttons) != 0 {
+				nButtons, _ := json.Marshal(buttons)
+				_ = caching.CACHE.Set(fmt.Sprintf("button_%v_%v", chatId, noteName), nButtons)
+			} else {
+				_ = caching.CACHE.Delete(fmt.Sprintf("button_%v_%v", chatId, noteName))
+			}
 		}
-	}
+	}(buttons)
+
+	return buttons
 }
