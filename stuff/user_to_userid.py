@@ -1,4 +1,4 @@
-from sophie_bot import mongodb
+from maya_bot import mongodb
 
 print(mongodb.blacklisted_users.update_many({'user': {'$exists': True}}, {"$rename": {'user': 'user_id'}}))
 

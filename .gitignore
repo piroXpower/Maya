@@ -7,8 +7,11 @@ __pycache__/
 output.txt
 Backups/
 .stignore
-sophie.log
+maya.log
 *.zip
 XDG_CACHE_HOME
 changelog.txt
 OrangeFox-temp-builds/
+.vscode
+.idea
+venv

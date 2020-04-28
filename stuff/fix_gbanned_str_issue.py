@@ -1,4 +1,4 @@
-from sophie_bot import mongodb
+from maya_bot import mongodb
 
 all_gbanned = mongodb.blacklisted_users.find({})
 for gbanned in all_gbanned:

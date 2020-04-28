@@ -1,12 +1,12 @@
 import ujson
 import datetime
 
-from sophie_bot import mongodb
+from maya_bot import mongodb
 
 load = True
 
 if load is True:
-    with open('sophie_bot/update.json', 'r') as f:
+    with open('maya_bot/update.json', 'r') as f:
         data = ujson.load(f)
         load_type = 'stable'
 

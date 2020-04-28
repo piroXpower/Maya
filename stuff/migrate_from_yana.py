@@ -19,7 +19,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from time import gmtime, strftime
 
-from sophie_bot import mongodb
+from maya_bot import mongodb
 
 import threading
 from typing import Union

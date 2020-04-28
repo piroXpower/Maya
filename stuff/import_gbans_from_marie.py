@@ -16,7 +16,7 @@
 import re
 from time import gmtime, strftime
 
-from sophie_bot import mongodb, logger
+from maya_bot import mongodb, logger
 
 f = open("owo.txt").read()
 F = 0
@@ -36,7 +36,7 @@ for user in oof:
     new = {
         'user': user_id,
         'date': date,
-        'by': "SophieBot import module",
+        'by': "MayaBot import module",
         'reason': reason
     }
     old = mongodb.blacklisted_users.find_one({'user': user_id})

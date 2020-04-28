@@ -13,12 +13,10 @@
 #
 # You should have received a copy of the GNU General Public License
 
-from maya_bot import mongodb
+from maya_bot import decorator
 
-check = mongodb.chat_list.find()
-F = 0
-for chat in check:
-    F += 1
-    if 'user_id' in chat:
-        mongodb.chat_list.delete_one({'_id': chat['_id']})
-        print(f"{F} deleted")
+
+@decorator.command("gban", is_sudo=True)
+async def blacklist_user(message):
+    await message.reply("Gbans removed till next big update. KTHX bye.")
+    return

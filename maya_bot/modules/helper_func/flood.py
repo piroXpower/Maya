@@ -13,12 +13,20 @@
 #
 # You should have received a copy of the GNU General Public License
 
-from maya_bot import mongodb
+from maya_bot import SUDO, redis
 
-check = mongodb.chat_list.find()
-F = 0
-for chat in check:
-    F += 1
-    if 'user_id' in chat:
-        mongodb.chat_list.delete_one({'_id': chat['_id']})
-        print(f"{F} deleted")
+
+async def prevent_flooding(message, command):
+    user_id = message.from_user.id
+    if user_id in SUDO:
+        return True
+    key = 'antiflood_{}_{}'.format(user_id, command)
+    num = redis.incr(key, 1)
+    redis.incr(key, 10)
+
+    if num == 10:
+        redis.expire(key, 120)
+        await message.reply("Aniflood limit reached, please wait 2 minutes!")
+    elif num > 10:
+        return False
+    return True

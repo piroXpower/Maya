@@ -16,7 +16,7 @@
 import csv
 from time import gmtime, strftime
 
-from sophie_bot import mongodb, logger
+from maya_bot import mongodb, logger
 
 f = open("owo.csv")
 reader = csv.DictReader(f, delimiter=',')
@@ -32,7 +32,7 @@ for row in reader:
     new = {
         'user': user_id,
         'date': date,
-        'by': "SophieBot import module",
+        'by': "MayaBot import module",
         'reason': reason
     }
     old = mongodb.blacklisted_users.find_one({'user': user_id})
