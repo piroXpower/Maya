@@ -76,7 +76,6 @@ def get_start(chat_id):
     text = strings["start_hi"]
     buttons = InlineKeyboardMarkup()
     buttons.add(InlineKeyboardButton(strings["btn_help"], callback_data='get_help'))
-    buttons.add(InlineKeyboardButton(strings["btn_lang"], callback_data='set_lang'))
     buttons.add(InlineKeyboardButton(strings["btn_chat"], url='https://t.me/MayaSupportGroup'))
 
     return text, buttons

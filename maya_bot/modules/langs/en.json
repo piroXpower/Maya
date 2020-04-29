@@ -276,7 +276,6 @@
     "pm_menu": {
         "start_hi": "Hey there! My name is Maya, I help you manage your group in an efficient way!",
         "btn_help": "❔ Help",
-        "btn_lang": "🇷🇺 Language",
         "btn_chat": "👥 Maya Group"
     },
     "disable": {
