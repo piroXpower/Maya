@@ -14,4 +14,4 @@ flask
 flask_bootstrap
 pysftp
 sentry_sdk
-
+Pillow

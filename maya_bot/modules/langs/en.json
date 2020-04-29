@@ -260,6 +260,16 @@
         "gbanned_date": "Data: <code>{data}</code>\n",
         "gbanned_reason": "Reason: <code>{reason}</code>\n"
     },
+    "stickers": {
+        "cant_kang": "I can't kang that.",
+        "sticker_added": "Sticker successfully added to [pack](t.me/addstickers/{packname}",
+        "only_images": "I can only kang images.",
+        "invalid_emoji": "Invalid emoji.",
+        "wrong_reply": "Reply to an image/sticker.",
+        "contact_first": "Contact me in PM first.",
+        "pack_created": "Sticker pack successfully created. Get it [here](t.me/addstickers/{packname}",
+        "failed_create": "Failed to create sticker pack."
+    },
     "gbans": {
         "user_is_blacklisted": "User {user} is blacklisted so has been removed. \nReason: __{rsn}__"
     },
