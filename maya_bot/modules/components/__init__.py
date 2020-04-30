@@ -23,7 +23,5 @@ def list_all_components():
 
 ALL_COMPONENTS = sorted(list(list_all_components()))
 
-print(ALL_COMPONENTS)
-
 logger.info("Components to load: %s", str(ALL_COMPONENTS))
 __all__ = ALL_COMPONENTS + ["ALL_COMPONENTS"]

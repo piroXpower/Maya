@@ -18,20 +18,21 @@ from telethon.tl.custom import Button
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.dispatcher.filters.builtin import CommandStart
 
-from maya_bot import BOT_USERNAME, decorator, logger, dp, bot
+from maya_bot import BOT_USERNAME, decorator, logger, dp, bot, CONFIG
 from maya_bot.modules.language import (LANGUAGES, get_chat_lang, get_string,
                                        lang_info, get_strings_dec, get_strings)
 
 from aiogram.utils.callback_data import CallbackData
 help_page_cp = CallbackData('help_page', 'module')
 help_btn_cp = CallbackData('help_btn', 'module', 'btn')
-
+NO_LOAD_MODULES = CONFIG["advanced"]["not_load_this_modules"]
 
 # Generate help cache
 HELP = []
 for module in LANGUAGES['en']['HELPS']:
-    logger.debug("Loading help for " + module)
-    HELP.append(module)
+    if module not in NO_LOAD_MODULES:
+        logger.debug("Loading help for " + module)
+        HELP.append(module)
 HELP = sorted(HELP)
 logger.info("Help loaded for: {}".format(HELP))
 

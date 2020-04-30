@@ -538,7 +538,7 @@
             "i5": "- /delfilter (keyword/key words) : Will stop the given filter names"
         }
     },
-    "federations": {
+    "feds": {
         "btn": "Federations",
         "title": "Group management.. It's fun, until you start getting spammers in all your chats, and you need to ban them. Then you need to start banning more, and more, and it gets painful. How can you deal? Do you have to ban them manually, in all your groups?",
         "text": {
