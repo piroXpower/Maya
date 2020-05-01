@@ -33,7 +33,11 @@ redis = redis.StrictRedis(
     decode_responses=True
 )
 
-rw = Root()
+rw = Root(
+    host=get_str_key("REDIS_URI"),
+    port=get_str_key("REDIS_PORT"),
+    db=get_int_key("REDIS_DB_FSM")
+)
 
 try:
     redis.ping()
