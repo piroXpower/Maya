@@ -444,6 +444,10 @@ STRINGS:
     ur_sticker: |
       <b>Emoji:</b> <code>{emoji}</code>
       <b>Sticker ID:</b> <code>{id}</code>
+    rpl_to_sticker_image: "Reply to a sticker/image!"
+    msg_first: "Message me in PM first"
+    invalid_emoji: "Invalid emoji!"
+    sticker_added: "Sticker successfully added. Get it [here](t.me/addstickers/{packname}"
   pins:
     no_reply_msg: "Reply to a message to pin!"
     chat_not_modified_pin: "That message is already pinned!"

@@ -34,3 +34,4 @@ loguru
 sentry_sdk
 babel
 captcha
+Pillow
