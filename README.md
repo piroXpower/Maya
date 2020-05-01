@@ -1,7 +1,4 @@
 
-# Sophie Telegram Bot
+# Maya Telegram Bot
 
->  Sophie is modern and fast Telegram chat manager bot
-
-    
-Read [the wiki of running bot page](https://wiki.sophiebot.gq/en/dev/running)
+>  Maya is modern and fast Telegram chat manager bot

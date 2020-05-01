@@ -1,0 +1,397 @@
+# Copyright (C) 2018 - 2020 MrYacha. All rights reserved. Source code available under the AGPL.
+# Copyright (C) 2019 Aiogram
+
+#
+# This file is part of SophieBot.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import asyncio
+
+from aiogram.utils.exceptions import MessageNotModified
+from babel.dates import format_datetime, format_timedelta
+from contextlib import suppress
+
+from maya_bot import BOT_ID, bot
+from maya_bot.decorator import register
+from maya_bot.services.redis import redis
+from maya_bot.services.telethon import tbot
+from .utils.connections import chat_connection
+from .utils.language import get_strings_dec
+from .utils.message import InvalidTimeUnit, get_cmd, convert_time
+from .utils.restrictions import kick_user, mute_user, unmute_user, ban_user, unban_user
+from .utils.user_details import get_user_dec, get_user_link, is_user_admin
+
+
+@register(cmds=['kick', 'skick'], bot_can_restrict_members=True, user_can_restrict_members=True)
+@chat_connection(admin=True, only_groups=True)
+@get_user_dec()
+@get_strings_dec('restrictions')
+async def kick_user_cmd(message, chat, user, strings):
+    chat_id = chat['chat_id']
+    user_id = user['user_id']
+
+    if user_id == BOT_ID:
+        await message.reply(strings['kick_maya'])
+        return
+
+    elif user_id == message.from_user.id:
+        await message.reply(strings['kick_self'])
+        return
+
+    elif await is_user_admin(chat_id, user_id):
+        await message.reply(strings['kick_admin'])
+        return
+
+    text = strings['user_kicked'].format(
+        user=await get_user_link(user_id),
+        admin=await get_user_link(message.from_user.id),
+        chat_name=chat['chat_title']
+    )
+
+    # Add reason
+    if len(args := message.get_args().split(' ', 1)) > 1:
+        text += strings['reason'] % args[1]
+
+    # Check if silent
+    silent = False
+    if get_cmd(message) == 'skick':
+        silent = True
+        key = 'leave_silent:' + str(chat_id)
+        redis.set(key, user_id)
+        redis.expire(key, 30)
+        text += strings['purge']
+
+    await kick_user(chat_id, user_id)
+
+    msg = await message.reply(text)
+
+    # Del msgs if silent
+    if silent:
+        to_del = [msg.message_id, message.message_id]
+        if 'reply_to_message' in message and message.reply_to_message.from_user.id == user_id:
+            to_del.append(message.reply_to_message.message_id)
+        await asyncio.sleep(5)
+        await tbot.delete_messages(chat_id, to_del)
+
+
+@register(cmds=['mute', 'smute', 'tmute', 'stmute'], bot_can_restrict_members=True, user_can_restrict_members=True)
+@chat_connection(admin=True, only_groups=True)
+@get_user_dec()
+@get_strings_dec('restrictions')
+async def mute_user_cmd(message, chat, user, strings):
+    chat_id = chat['chat_id']
+    user_id = user['user_id']
+
+    if user_id == BOT_ID:
+        await message.reply(strings['mute_maya'])
+        return
+
+    elif user_id == message.from_user.id:
+        await message.reply(strings['mute_self'])
+        return
+
+    elif await is_user_admin(chat_id, user_id):
+        await message.reply(strings['mute_admin'])
+        return
+
+    text = strings['user_muted'].format(
+        user=await get_user_link(user_id),
+        admin=await get_user_link(message.from_user.id),
+        chat_name=chat['chat_title']
+    )
+
+    curr_cmd = get_cmd(message)
+
+    # Check if temprotary
+    until_date = None
+    if curr_cmd == 'tmute' or curr_cmd == 'stmute':
+        if len(args := message.get_args().split(' ', 2)) > 1:
+            try:
+                until_date = convert_time(args[1])
+            except InvalidTimeUnit:
+                await message.reply(strings['invalid_time'])
+                return
+
+            text += strings['on_time'] % format_timedelta(until_date, locale=strings['language_info']['babel'])
+
+            # Add reason
+            if len(args) > 2:
+                text += strings['reason'] % args[2]
+        else:
+            await message.reply(strings['enter_time'])
+            return
+    else:
+        # Add reason
+        if len(args := message.get_args().split(' ', 1)) > 1:
+            text += strings['reason'] % args[1]
+
+    # Check if silent
+    silent = False
+    if curr_cmd == 'smute' or curr_cmd == 'stmute':
+        silent = True
+        key = 'leave_silent:' + str(chat_id)
+        redis.set(key, user_id)
+        redis.expire(key, 30)
+        text += strings['purge']
+
+    await mute_user(chat_id, user_id, until_date=until_date)
+
+    msg = await message.reply(text)
+
+    # Del msgs if silent
+    if silent:
+        to_del = [msg.message_id, message.message_id]
+        if 'reply_to_message' in message and message.reply_to_message.from_user.id == user_id:
+            to_del.append(message.reply_to_message.message_id)
+        await asyncio.sleep(5)
+        await tbot.delete_messages(chat_id, to_del)
+
+
+@register(cmds='unmute', bot_can_restrict_members=True, user_can_restrict_members=True)
+@chat_connection(admin=True, only_groups=True)
+@get_user_dec()
+@get_strings_dec('restrictions')
+async def unmute_user_cmd(message, chat, user, strings):
+    chat_id = chat['chat_id']
+    user_id = user['user_id']
+
+    if user_id == BOT_ID:
+        await message.reply(strings['unmute_maya'])
+        return
+
+    elif user_id == message.from_user.id:
+        await message.reply(strings['unmute_self'])
+        return
+
+    elif await is_user_admin(chat_id, user_id):
+        await message.reply(strings['unmute_admin'])
+        return
+
+    await unmute_user(chat_id, user_id)
+
+    text = strings['user_unmuted'].format(
+        user=await get_user_link(user_id),
+        admin=await get_user_link(message.from_user.id),
+        chat_name=chat['chat_title']
+    )
+
+    await message.reply(text)
+
+
+@register(cmds=['ban', 'sban', 'tban', 'stban'], bot_can_restrict_members=True, user_can_restrict_members=True)
+@chat_connection(admin=True, only_groups=True)
+@get_user_dec()
+@get_strings_dec('restrictions')
+async def ban_user_cmd(message, chat, user, strings):
+    chat_id = chat['chat_id']
+    user_id = user['user_id']
+
+    if user_id == BOT_ID:
+        await message.reply(strings['ban_maya'])
+        return
+
+    elif user_id == message.from_user.id:
+        await message.reply(strings['ban_self'])
+        return
+
+    elif await is_user_admin(chat_id, user_id):
+        await message.reply(strings['ban_admin'])
+        return
+
+    text = strings['user_banned'].format(
+        user=await get_user_link(user_id),
+        admin=await get_user_link(message.from_user.id),
+        chat_name=chat['chat_title']
+    )
+
+    curr_cmd = get_cmd(message)
+
+    # Check if temprotary
+    until_date = None
+    if curr_cmd == 'tban' or curr_cmd == 'stban':
+        if len(args := message.get_args().split(' ', 2)) > 1:
+            try:
+                until_date, unit = convert_time(args[1])
+            except InvalidTimeUnit:
+                await message.reply(strings['invalid_time'])
+                return
+
+            text += strings['on_time'] % format_datetime(until_date, locale=strings['language_info']['babel'])
+
+            # Add reason
+            if len(args) > 2:
+                text += strings['reason'] % args[2]
+        else:
+            await message.reply(strings['enter_time'])
+            return
+    else:
+        # Add reason
+        if len(args := message.get_args().split(' ', 1)) > 1:
+            text += strings['reason'] % args[1]
+
+    # Check if silent
+    silent = False
+    if curr_cmd == 'sban' or curr_cmd == 'stban':
+        silent = True
+        key = 'leave_silent:' + str(chat_id)
+        redis.set(key, user_id)
+        redis.expire(key, 30)
+        text += strings['purge']
+
+    await ban_user(chat_id, user_id, until_date=until_date)
+
+    msg = await message.reply(text)
+
+    # Del msgs if silent
+    if silent:
+        to_del = [msg.message_id, message.message_id]
+        if 'reply_to_message' in message and message.reply_to_message.from_user.id == user_id:
+            to_del.append(message.reply_to_message.message_id)
+        await asyncio.sleep(5)
+        await tbot.delete_messages(chat_id, to_del)
+
+
+@register(cmds='unban', bot_can_restrict_members=True, user_can_restrict_members=True)
+@chat_connection(admin=True, only_groups=True)
+@get_user_dec()
+@get_strings_dec('restrictions')
+async def unban_user_cmd(message, chat, user, strings):
+    chat_id = chat['chat_id']
+    user_id = user['user_id']
+
+    if user_id == BOT_ID:
+        await message.reply(strings['unban_maya'])
+        return
+
+    elif user_id == message.from_user.id:
+        await message.reply(strings['unban_self'])
+        return
+
+    elif await is_user_admin(chat_id, user_id):
+        await message.reply(strings['unban_admin'])
+        return
+
+    await unban_user(chat_id, user_id)
+
+    text = strings['user_unband'].format(
+        user=await get_user_link(user_id),
+        admin=await get_user_link(message.from_user.id),
+        chat_name=chat['chat_title']
+    )
+
+    await message.reply(text)
+
+
+@register(f='leave')
+async def leave_silent(message):
+    if not message.from_user.id == BOT_ID:
+        return
+
+    if redis.get('leave_silent:' + str(message.chat.id)) == message.left_chat_member.id:
+        await message.delete()
+
+
+@get_strings_dec('restrictions')
+async def filter_handle_ban(message, chat, data, strings=None):
+    if await is_user_admin(chat['chat_id'], message.from_user.id):
+        return
+    if await ban_user(chat['chat_id'], message.from_user.id):
+        reason = strings['filter_action_rsn'] % data['handler']
+        text = strings['filtr_ban_success'] % (await get_user_link(BOT_ID), await get_user_link(message.from_user.id),
+                                               reason)
+        await bot.send_message(chat['chat_id'], text)
+        await message.delete()
+
+
+@get_strings_dec('restrictions')
+async def filter_handle_mute(message, chat, data, strings=None):
+    if await is_user_admin(chat['chat_id'], message.from_user.id):
+        return
+    if await mute_user(chat['chat_id'], message.from_user.id):
+        reason = strings['filter_action_rsn'] % data['handler']
+        text = strings['filtr_mute_success'] % (await get_user_link(BOT_ID), await get_user_link(message.from_user.id),
+                                                reason)
+        await bot.send_message(chat['chat_id'], text)
+        await message.delete()
+
+
+@get_strings_dec('restrictions')
+async def filter_handle_tmute(message, chat, data, strings=None):
+    if await is_user_admin(chat['chat_id'], message.from_user.id):
+        return
+    if await mute_user(chat['chat_id'], message.from_user.id, until_date=data['time']):
+        reason = strings['filter_action_rsn'] % data['handler']
+        time = format_timedelta(data['time'], locale=strings['language_info']['babel'])
+        text = strings['filtr_tmute_success'] % (await get_user_link(BOT_ID), await get_user_link(message.from_user.id),
+                                                 time, reason)
+        await bot.send_message(chat['chat_id'], text)
+        await message.delete()
+
+
+@get_strings_dec('restrictions')
+async def filter_handle_tban(message, chat, data, strings=None):
+    if await is_user_admin(chat['chat_id'], message.from_user.id):
+        return
+    if await ban_user(chat['chat_id'], message.from_user.id, until_date=data['time']):
+        reason = strings['filter_action_rsn'] % data['handler']
+        time = format_timedelta(data['time'], locale=strings['language_info']['babel'])
+        text = strings['filtr_tban_success'] % (await get_user_link(BOT_ID), await get_user_link(message.from_user.id),
+                                                time, reason)
+        await bot.send_message(chat['chat_id'], text)
+        await message.delete()
+
+
+@get_strings_dec('restrictions')
+async def time_setup_start(message, strings):
+    with suppress(MessageNotModified):
+        await message.edit_text(strings['time_setup_start'])
+
+
+@get_strings_dec('restrictions')
+async def time_setup_finish(message, data, strings):
+    try:
+        time = convert_time(message.text)
+    except InvalidTimeUnit:
+        return await message.reply(strings['invalid_time'])
+    else:
+        return {'time': time}
+
+
+__filters__ = {
+    'ban_user': {
+        'title': {'module': 'restrictions', 'string': 'filter_title_ban'},
+        'handle': filter_handle_ban
+    },
+    'mute_user': {
+        'title': {'module': 'restrictions', 'string': 'filter_title_mute'},
+        'handle': filter_handle_mute
+    },
+    'tmute_user': {
+        'title': {'module': 'restrictions', 'string': 'filter_title_tmute'},
+        'handle': filter_handle_tmute,
+        'setup': {
+            'start': time_setup_start,
+            'finish': time_setup_finish
+        }
+    },
+    'tban_user': {
+        'title': {'module': 'restrictions', 'string': 'filter_title_tban'},
+        'handle': filter_handle_tban,
+        'setup': {
+            'start': time_setup_start,
+            'finish': time_setup_finish
+        }
+    }
+}
